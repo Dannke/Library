@@ -18,19 +18,24 @@ function insertBook(bookData) {
   return BooksCollection.insert(bookData);
 }
 
+function deleteBook(bookTitle) {
+  check(bookTitle, String);
+  return BooksCollection.remove({ title: bookTitle });
+}
+
 Meteor.startup(async () => {
-  if (BooksCollection.find().count() === 0) {
-    insertBook({
-      title: "asd",
-      author: "John Doe",
-      year: 2023,
-      place: "Unknown",
-      edition: "1st Edition",
-      udc: "123.456",
-    });
-  }
 
   Meteor.publish('books', function () {
     return BooksCollection.find();
+  });
+
+  Meteor.methods({
+    'addBook': function (bookData) {
+      bookData.year = parseInt(bookData.year, 10);
+      insertBook(bookData);
+    },
+    'deleteBook': function (bookTitle) {
+      deleteBook(bookTitle);
+    }
   });
 });
