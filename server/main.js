@@ -6,6 +6,7 @@ import { check } from "meteor/check";
 import { CountryCollection } from "../imports/api/countryCollection";
 import { EditionsCollection } from "../imports/api/editionsCollection";
 import { UdcCollection } from "../imports/api/udcCollection";
+import { inventoryNumbersCollection } from "../imports/api/inventoryNumbersCollection";
 
 function insertBook(bookData) {
   // Проверяем, что bookData соответствует схеме BooksCollection
@@ -16,6 +17,7 @@ function insertBook(bookData) {
     country: String,
     edition: String,
     udc: String,
+    count: Number,
   });
 
   return BooksCollection.insert(bookData);
@@ -26,6 +28,18 @@ function deleteBook(bookTitle) {
   return BooksCollection.remove({ title: bookTitle });
 }
 
+function generateBookNumber() {
+  // Находим максимальный существующий номер
+  const maxNumber = inventoryNumbersCollection.findOne(
+    {},
+    {
+      sort: { number: -1 },
+      fields: { number: 1 },
+    }
+  );
+  return (maxNumber?.number || 0) + 1;
+}
+
 Meteor.startup(async () => {
   Meteor.publish("books", function () {
     return BooksCollection.find();
@@ -34,6 +48,11 @@ Meteor.startup(async () => {
   Meteor.publish("editions", function () {
     const editions = EditionsCollection.find();
     return editions;
+  });
+
+  Meteor.publish("inventory_numbers", function () {
+    const invNumbers = inventoryNumbersCollection.find();
+    return invNumbers;
   });
 
   Meteor.publish("udc", function () {
@@ -47,9 +66,19 @@ Meteor.startup(async () => {
   });
 
   Meteor.methods({
-    addBook: function (bookData) {
-      bookData.year = parseInt(bookData.year, 10);
-      insertBook(bookData);
+    addBook(bookData, count) {
+      const bookId = BooksCollection.insert(bookData);
+
+      // Генерируем уникальные номера
+      for (let i = 0; i < count; i++) {
+        const number = generateBookNumber();
+
+        inventoryNumbersCollection.insert({
+          id_book: bookData.title,
+          number,
+        });
+      }
+      return bookId;
     },
     deleteBook: function (bookTitle) {
       deleteBook(bookTitle);

@@ -12,6 +12,7 @@ export const BookTable = ({ books }) => {
           <th>Country</th>
           <th>Edition</th>
           <th>UDC</th>
+          <th>Количество</th>
         </tr>
       </thead>
       <tbody>
@@ -23,6 +24,7 @@ export const BookTable = ({ books }) => {
             <td>{book.country}</td>
             <td>{book.edition}</td>
             <td>{book.udc}</td>
+            <td>{book.count}</td>
           </tr>
         ))}
       </tbody>

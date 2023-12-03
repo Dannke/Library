@@ -38,6 +38,10 @@ const BooksSchema = new SimpleSchema({
     type: String,
     custom: validateUdc
   },
+  count: {
+    type: Number,
+    defaultValue: 0
+  }
 });
 
 BooksCollection.attachSchema(BooksSchema);

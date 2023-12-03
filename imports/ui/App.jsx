@@ -23,6 +23,7 @@ export const App = () => {
     const countriesHandle = Meteor.subscribe('countries');
     const udcHandle = Meteor.subscribe('udc');
     const handle = Meteor.subscribe('books');
+    const invNumbersHandle = Meteor.subscribe('inventory_numbers');
     
     if(!countriesHandle.ready()) {
       return {countries: []} 
@@ -39,6 +40,7 @@ export const App = () => {
       countries: CountryCollection.find().fetch(),
       editions: EditionsCollection.find().fetch(),
       udc: UdcCollection.find().fetch()
+
     };
   
   });

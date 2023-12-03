@@ -15,6 +15,7 @@ export const AddBookForm = ({ onAddBook }) => {
     country: "",
     edition: "",
     udc: "",
+    count: 0,
   });
 
   const { countries, editions, udc } = useTracker(() => {
@@ -31,7 +32,8 @@ export const AddBookForm = ({ onAddBook }) => {
 
   const handleAddBook = () => {
     if (Object.values(bookData).every((value) => value !== "")) {
-      Meteor.call("addBook", bookData, (error, result) => {
+      const count = bookData.count;
+      Meteor.call("addBook", bookData, count, (error, result) => {
         if (!error) {
           onAddBook(); // Сообщаем родительскому компоненту об успешном добавлении
           //onHideForm();
@@ -42,6 +44,7 @@ export const AddBookForm = ({ onAddBook }) => {
             country: "",
             edition: "",
             udc: "",
+            count: 0,
           });
         } else {
           alert(`Ошибка при добавлении книги: ${error.reason}`);
@@ -76,7 +79,7 @@ export const AddBookForm = ({ onAddBook }) => {
         <input
           type="number"
           value={bookData.year}
-          onChange={(e) => handleChange("year", e.target.value)}
+          onChange={(e) => handleChange("year", parseInt(e.target.value))}
         />
       </div>
       <div className="form-field">
@@ -123,6 +126,16 @@ export const AddBookForm = ({ onAddBook }) => {
             </option>
           ))}
         </select>
+        <div className="form-field">
+          <label>Количество:</label>
+          <input
+            type="number"
+            value={bookData.count}
+            onChange={(e) =>
+              setBookData({ ...bookData, count: e.target.value })
+            }
+          />
+        </div>
       </div>
       <button onClick={handleAddBook}>Добавить</button>
     </div>
