@@ -2,15 +2,27 @@
 import React, { useState } from "react";
 import { Meteor } from "meteor/meteor";
 import { BooksCollection } from "../api/booksCollection";
+import { CountryCollection } from "../api/countryCollection";
+import { useTracker } from "meteor/react-meteor-data";
+import { EditionsCollection } from "../api/editionsCollection";
+import { UdcCollection } from "../api/udcCollection";
 
 export const AddBookForm = ({ onAddBook }) => {
   const [bookData, setBookData] = useState({
     title: "",
     author: "",
     year: 0,
-    place: "",
+    country: "",
     edition: "",
     udc: "",
+  });
+
+  const { countries, editions, udc } = useTracker(() => {
+    return {
+      countries: CountryCollection.find({}, { sort: { country: 1 } }).fetch(),
+      editions: EditionsCollection.find({}, { sort: { edition: 1 } }).fetch(),
+      udc: UdcCollection.find({}, { sort: { udc: 1 } }).fetch(),
+    };
   });
 
   const handleChange = (field, value) => {
@@ -19,15 +31,15 @@ export const AddBookForm = ({ onAddBook }) => {
 
   const handleAddBook = () => {
     if (Object.values(bookData).every((value) => value !== "")) {
-      Meteor.call('addBook', bookData, (error, result) => {
+      Meteor.call("addBook", bookData, (error, result) => {
         if (!error) {
           onAddBook(); // Сообщаем родительскому компоненту об успешном добавлении
-          onHideForm();
+          //onHideForm();
           setBookData({
             title: "",
             author: "",
             year: 0,
-            place: "",
+            country: "",
             edition: "",
             udc: "",
           });
@@ -68,28 +80,49 @@ export const AddBookForm = ({ onAddBook }) => {
         />
       </div>
       <div className="form-field">
-        <label>Место:</label>
-        <input
-          type="text"
-          value={bookData.place}
-          onChange={(e) => handleChange("place", e.target.value)}
-        />
+        <label>Страна:</label>
+
+        <select
+          value={bookData.country}
+          onChange={(e) => handleChange("country", e.target.value)}
+        >
+          <option value="">-- Выберите страну --</option>
+          {countries.map((country) => (
+            <option key={country._id} value={country._id}>
+              {country.country}
+            </option>
+          ))}
+        </select>
       </div>
       <div className="form-field">
-        <label>Редакция:</label>
-        <input
-          type="text"
+        <label>Издание:</label>
+
+        <select
           value={bookData.edition}
           onChange={(e) => handleChange("edition", e.target.value)}
-        />
+        >
+          <option value="">-- Выберите издание --</option>
+          {editions.map((edition) => (
+            <option key={edition._id} value={edition._id}>
+              {edition._id}
+            </option>
+          ))}
+        </select>
       </div>
       <div className="form-field">
         <label>UDC:</label>
-        <input
-          type="text"
+
+        <select
           value={bookData.udc}
           onChange={(e) => handleChange("udc", e.target.value)}
-        />
+        >
+          <option value="">-- Выберите издание --</option>
+          {udc.map((udc) => (
+            <option key={udc._id} value={udc._id}>
+              {udc._id}
+            </option>
+          ))}
+        </select>
       </div>
       <button onClick={handleAddBook}>Добавить</button>
     </div>

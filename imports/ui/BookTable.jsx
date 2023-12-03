@@ -9,7 +9,7 @@ export const BookTable = ({ books }) => {
           <th>Title</th>
           <th>Author</th>
           <th>Year</th>
-          <th>Place</th>
+          <th>Country</th>
           <th>Edition</th>
           <th>UDC</th>
         </tr>
@@ -20,7 +20,7 @@ export const BookTable = ({ books }) => {
             <td>{book.title}</td>
             <td>{book.author}</td>
             <td>{book.year}</td>
-            <td>{book.place}</td>
+            <td>{book.country}</td>
             <td>{book.edition}</td>
             <td>{book.udc}</td>
           </tr>
