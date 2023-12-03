@@ -7,7 +7,7 @@ const ReadersSchema = new SimpleSchema({
   name: { type: String },
   surname: { type: String },
   patronymic: { type: String },
-  telephone: { type: String },
+  telephone: { type: String },``
   adress: { type: String },
   dateRegestration: { type: Date },
 });
