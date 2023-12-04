@@ -23,7 +23,7 @@ export const DeleteBookForm = ({ onDeleteBook, onHideForm }) => {
 
   return (
     <div>
-      <h2>Удалить книгу</h2>
+      <h2 className="HeaderForm">Удалить книгу</h2>
       <div className="form-field">
         <label>Название:</label>
         <input

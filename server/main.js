@@ -25,7 +25,12 @@ function insertBook(bookData) {
 
 function deleteBook(bookTitle) {
   check(bookTitle, String);
-  return BooksCollection.remove({ title: bookTitle });
+  const book = BooksCollection.findOne({ title: bookTitle });
+
+  if (book) {
+    BooksCollection.remove({ _id: book._id });
+    inventoryNumbersCollection.remove({ book: bookTitle });
+  }
 }
 
 function generateBookNumber() {
@@ -48,6 +53,10 @@ Meteor.startup(async () => {
   Meteor.publish("editions", function () {
     const editions = EditionsCollection.find();
     return editions;
+  });
+  Meteor.publish("readers", function () {
+    const readers = ReadersCollection.find();
+    return readers;
   });
 
   Meteor.publish("inventory_numbers", function () {
@@ -74,7 +83,7 @@ Meteor.startup(async () => {
         const number = generateBookNumber();
 
         inventoryNumbersCollection.insert({
-          id_book: bookData.title,
+          book: bookData.title,
           number,
         });
       }
@@ -82,6 +91,36 @@ Meteor.startup(async () => {
     },
     deleteBook: function (bookTitle) {
       deleteBook(bookTitle);
+    },
+    editBookField: function (bookId, field, value) {
+      check(bookId, String);
+      check(field, String);
+  
+      const allowedFields = ["title", "author", "year", "country", "edition", "udc"];
+  
+      if (!allowedFields.includes(field)) {
+        throw new Meteor.Error("invalid-field", "Попытка редактирования недопустимого поля.");
+      }
+  
+      const update = {};
+      update[field] = value;
+  
+      // Обновляем данные в коллекции BooksCollection
+      BooksCollection.update(bookId, { $set: update });
+  
+      // Если изменено название книги, обновляем соответствующие инвентарные номера
+      if (field === "title") {
+        // Находим все документы, которые содержат старое название книги
+        const inventoryNumbersToUpdate = inventoryNumbersCollection.find({ book: bookId }).fetch();
+        console.log(inventoryNumbersToUpdate);
+        // Обновляем каждый документ в коллекции inventoryNumbersCollection
+        inventoryNumbersToUpdate.forEach((inventoryNumber) => {
+          inventoryNumbersCollection.update(
+            { _id: inventoryNumber._id },
+            { $set: { book: value } }
+          );
+        });
+      }
     },
   });
 });

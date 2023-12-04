@@ -57,7 +57,7 @@ export const AddBookForm = ({ onAddBook }) => {
 
   return (
     <div>
-      <h2>Добавить книгу</h2>
+      <h2 className="HeaderForm">Добавить книгу</h2>
       <div className="form-field">
         <label>Название:</label>
         <input
@@ -119,13 +119,14 @@ export const AddBookForm = ({ onAddBook }) => {
           value={bookData.udc}
           onChange={(e) => handleChange("udc", e.target.value)}
         >
-          <option value="">-- Выберите издание --</option>
+          <option value="">-- Выберите UDC --</option>
           {udc.map((udc) => (
             <option key={udc._id} value={udc._id}>
               {udc._id}
             </option>
           ))}
         </select>
+      </div>
         <div className="form-field">
           <label>Количество:</label>
           <input
@@ -136,7 +137,6 @@ export const AddBookForm = ({ onAddBook }) => {
             }
           />
         </div>
-      </div>
       <button onClick={handleAddBook}>Добавить</button>
     </div>
   );

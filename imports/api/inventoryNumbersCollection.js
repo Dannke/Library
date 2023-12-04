@@ -11,7 +11,7 @@ const validateBooks = value => {
   }
 
 const InvNumbersSchema = new SimpleSchema({
-    id_book: {
+    book: {
         type: String
     },
     number: {type: Number}

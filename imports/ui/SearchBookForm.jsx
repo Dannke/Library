@@ -14,7 +14,7 @@ export const SearchBookForm = ({ books, onSearch, onHideForm }) => {
 
   return (
     <div>
-      <h2>Поиск книг</h2>
+      <h2 className="HeaderForm">Поиск книг</h2>
       <div className="form-field">
         <label>Название:</label>
         <input

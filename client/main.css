@@ -1,7 +1,3 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-}
 
 .panel {
   background-color: #807c7c;
@@ -23,7 +19,90 @@ body {
   margin-bottom: 10px;
 }
 
+label {
+  width: 150px;
+  display: inline-block;
+}
+
+input[type="text"],
+input[type="number"], 
+select {
+  margin-left: 10px;
+  width: 200px;  
+}
+
+.form-field {
+  margin-bottom: 10;
+}
+
+.HeaderForm{
+  text-align: center; 
+}
+
+.table-container {
+  width: 100%;
+  margin: 20px auto;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+/* Дополнительные стили для кнопок и других элементов */
 .button {
   font-size: 18px;
   padding: 10px 20px;
+  margin: 5px;
+}
+
+/* Добавьте класс .content-wrapper к вашему контейнеру .content для стилизации таблиц */
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Добавьте класс .form-container к вашим формам для стилизации */
+.form-container {
+  width: 40%;
+  margin: 20px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
+
+/* Добавьте класс .header-container к вашему заголовку таблицы */
+.header-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Добавьте класс .panel-container к вашему блоку .panel для стилизации */
+.panel-container {
+  background-color: #807c7c;
+  padding: 10px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 1;
+}
+
+/* Добавьте класс .body-container к вашему телу body для стилизации */
+body {
+  margin: 0;
+  background-color: rgb(148, 135, 175);
+  font-family: Arial, sans-serif;
 }

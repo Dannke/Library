@@ -3,31 +3,33 @@ import React from "react";
 
 export const BookTable = ({ books }) => {
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Author</th>
-          <th>Year</th>
-          <th>Country</th>
-          <th>Edition</th>
-          <th>UDC</th>
-          <th>Количество</th>
-        </tr>
-      </thead>
-      <tbody>
-        {books.map((book) => (
-          <tr key={book._id}>
-            <td>{book.title}</td>
-            <td>{book.author}</td>
-            <td>{book.year}</td>
-            <td>{book.country}</td>
-            <td>{book.edition}</td>
-            <td>{book.udc}</td>
-            <td>{book.count}</td>
+    <div className="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th className="header-container">Название</th>
+            <th className="header-container">Автор</th>
+            <th className="header-container">Год</th>
+            <th className="header-container">Страна</th>
+            <th className="header-container">Издательство</th>
+            <th className="header-container">UDC</th>
+            <th className="header-container">Количество</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {books.map((book) => (
+            <tr key={book._id}>
+              <td className="header-container">{book.title}</td>
+              <td className="header-container">{book.author}</td>
+              <td className="header-container">{book.year}</td>
+              <td className="header-container">{book.country}</td>
+              <td className="header-container">{book.edition}</td>
+              <td className="header-container">{book.udc}</td>
+              <td className="header-container">{book.count}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };

@@ -9,7 +9,7 @@ const ReadersSchema = new SimpleSchema({
   patronymic: { type: String },
   telephone: { type: String },
   adress: { type: String },
-  dateRegestration: { type: Date },
+  dateRegistration: { type: Date },
 });
 
 ReadersCollection.attachSchema(ReadersSchema);
