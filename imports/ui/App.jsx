@@ -10,8 +10,9 @@ import { CountryCollection } from "../api/countryCollection.js";
 import { EditionsCollection } from "../api/editionsCollection.js";
 import { UdcCollection } from "../api/udcCollection.js";
 import { ReadersTable } from "./RedersTable.jsx";
-import {ReadersCollection} from "../api/readersCollection.js"
+import { ReadersCollection} from "../api/readersCollection.js"
 import { EditBookForm } from "./EditBookForm.jsx";
+import {BookManagement} from "./BookManagent.jsx"
 
 export const App = () => {
   const [showTable, setShowTable] = useState(false);
@@ -23,6 +24,7 @@ export const App = () => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
   const [selectedField, setSelectedField] = useState(null);
+  const [showBookManagementForm, setShowBookManagementForm] = useState(false);
 
   const {books, countries, editions, udc, readers, isLoading} = useTracker(() => {
 
@@ -32,6 +34,7 @@ export const App = () => {
     const handle = Meteor.subscribe('books');
     const invNumbersHandle = Meteor.subscribe('inventory_numbers');
     const readersHandle = Meteor.subscribe('readers');
+    const abonementhandle = Meteor.subscribe('abonements')
     
     if(!countriesHandle.ready()) {
       return {countries: []} 
@@ -57,6 +60,7 @@ export const App = () => {
     setShowReadersTable(true);
     setShowTable(true);
     setShowEditForm(false);
+    setShowBookManagementForm(false);
   };
 
   const handleShowEditForm = () => {
@@ -65,6 +69,7 @@ export const App = () => {
     setShowAddForm(false);
     setShowDeleteForm(false);
     setShowSearchForm(false);
+    setShowBookManagementForm(false);
     setSearchResults([]);
   };
 
@@ -82,6 +87,7 @@ export const App = () => {
     setShowReadersTable(false);
     setShowDeleteForm(false);
     setShowSearchForm(false);
+    setShowBookManagementForm(false);
     setSearchResults([]);
   };
 
@@ -91,6 +97,7 @@ export const App = () => {
     setShowDeleteForm(false);
     setShowSearchForm(false);
     setShowEditForm(false);
+    setShowBookManagementForm(false);
   };
 
   const handleShowDeleteForm = () => {
@@ -99,6 +106,7 @@ export const App = () => {
     setShowDeleteForm(true);
     setShowSearchForm(false);
     setShowEditForm(false);
+    setShowBookManagementForm(false);
   };
 
   const handleShowSearchForm = () => {
@@ -107,6 +115,7 @@ export const App = () => {
     setShowDeleteForm(false);
     setShowSearchForm(true);
     setShowEditForm(false);
+    setShowBookManagementForm(false);
   };
 
   const handleHideAddForm = () => {
@@ -130,6 +139,15 @@ export const App = () => {
     setShowSearchForm(false);
   };
 
+  const handleShowBookManagementForm = () => {
+    setShowBookManagementForm(true);
+    setShowSearchForm(false);
+    setShowDeleteForm(false);
+    setShowAddForm(false);
+    setShowTable(false);
+    setShowEditForm(false);
+  }
+
   return (
     <div>
       <div className="panel-container">
@@ -139,6 +157,7 @@ export const App = () => {
         <button className="button" onClick={handleShowSearchForm}>Найти книги</button>
         <button className="button" onClick={handleShowEditForm}>Редактировать книги</button>
         <button className="button" onClick={handleShowReaders}>Показать читателей</button>
+        <button className="button" onClick={handleShowBookManagementForm}>Добавить/Удалить книгу читателю</button>
       </div>
 
       <div className="content">
@@ -176,6 +195,7 @@ export const App = () => {
             onEditBook={handleHideEditForm}
           />
         )}
+         {showBookManagementForm && <BookManagement />}
         </div>
       </div>
     </div>

@@ -7,6 +7,8 @@ import { CountryCollection } from "../imports/api/countryCollection";
 import { EditionsCollection } from "../imports/api/editionsCollection";
 import { UdcCollection } from "../imports/api/udcCollection";
 import { inventoryNumbersCollection } from "../imports/api/inventoryNumbersCollection";
+import { AbonementCollection } from "../imports/api/abonementCollection";
+
 
 function insertBook(bookData) {
   // Проверяем, что bookData соответствует схеме BooksCollection
@@ -28,8 +30,8 @@ function deleteBook(bookTitle) {
   const book = BooksCollection.findOne({ title: bookTitle });
 
   if (book) {
+    inventoryNumbersCollection.remove({ bookId: book._id });
     BooksCollection.remove({ _id: book._id });
-    inventoryNumbersCollection.remove({ book: bookTitle });
   }
 }
 
@@ -83,7 +85,7 @@ Meteor.startup(async () => {
         const number = generateBookNumber();
 
         inventoryNumbersCollection.insert({
-          book: bookData.title,
+          bookId: bookId,
           number,
         });
       }
@@ -110,16 +112,52 @@ Meteor.startup(async () => {
   
       // Если изменено название книги, обновляем соответствующие инвентарные номера
       if (field === "title") {
-        // Находим все документы, которые содержат старое название книги
-        const inventoryNumbersToUpdate = inventoryNumbersCollection.find({ book: bookId }).fetch();
-        console.log(inventoryNumbersToUpdate);
+        // Находим все документы, которые содержат старое _id книги
+        const inventoryNumbersToUpdate = inventoryNumbersCollection.find({ bookId: bookId }).fetch();
+  
         // Обновляем каждый документ в коллекции inventoryNumbersCollection
         inventoryNumbersToUpdate.forEach((inventoryNumber) => {
           inventoryNumbersCollection.update(
             { _id: inventoryNumber._id },
-            { $set: { book: value } }
+            { $set: { bookId: value } }
           );
         });
+      }
+    },
+    addBookToAbonement: function (readerId, bookId, issueDate, deliveryDate) {
+      check(readerId, String);
+      check(bookId, String);
+      check(issueDate, Date);
+      
+      // Проверяем, если deliveryDate предоставлен, он должен быть датой
+      if (deliveryDate && !(deliveryDate instanceof Date)) {
+        throw new Meteor.Error("invalid-date", "Дата возврата должна быть объектом Date");
+      }
+      const abonementData = {
+        id_reader: readerId,
+        book_number_id: bookId,
+        issue_date: issueDate,
+      };
+  
+      // Если deliveryDate предоставлен, добавляем его в abonementData
+      if (deliveryDate) {
+        abonementData.delivery_date = deliveryDate;
+      }
+      return AbonementCollection.insert(abonementData);
+    },
+    removeBookFromAbonement: function (readerId, bookId) {
+      check(readerId, String);
+      check(bookId, String);
+  
+      const abonementData = {
+        id_reader: readerId,
+        book_number_id: bookId,
+      };
+  
+      // Находим документ в коллекции abonement и удаляем его
+      const abonementEntry = AbonementCollection.findOne(abonementData);
+      if (abonementEntry) {
+        AbonementCollection.remove(abonementEntry._id);
       }
     },
   });

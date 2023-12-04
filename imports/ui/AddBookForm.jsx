@@ -36,7 +36,6 @@ export const AddBookForm = ({ onAddBook }) => {
       Meteor.call("addBook", bookData, count, (error, result) => {
         if (!error) {
           onAddBook(); // Сообщаем родительскому компоненту об успешном добавлении
-          //onHideForm();
           setBookData({
             title: "",
             author: "",
