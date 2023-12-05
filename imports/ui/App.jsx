@@ -10,9 +10,12 @@ import { CountryCollection } from "../api/countryCollection.js";
 import { EditionsCollection } from "../api/editionsCollection.js";
 import { UdcCollection } from "../api/udcCollection.js";
 import { ReadersTable } from "./RedersTable.jsx";
-import { ReadersCollection} from "../api/readersCollection.js"
+import { ReadersCollection } from "../api/readersCollection.js";
 import { EditBookForm } from "./EditBookForm.jsx";
-import {BookManagement} from "./BookManagent.jsx"
+import { BookManagement } from "./BookManagent.jsx";
+import { LoginForm } from "./LoginForm.jsx";
+import { UsersCollection } from "../api/usersCollection.js";
+import { RegistrationForm } from "./RegistrationForm.jsx";
 
 export const App = () => {
   const [showTable, setShowTable] = useState(false);
@@ -25,36 +28,66 @@ export const App = () => {
   const [selectedBook, setSelectedBook] = useState(null);
   const [selectedField, setSelectedField] = useState(null);
   const [showBookManagementForm, setShowBookManagementForm] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isRegistrationMode, setIsRegistrationMode] = useState(false);
 
-  const {books, countries, editions, udc, readers, isLoading} = useTracker(() => {
+  const { books, countries, editions, udc, readers, isLoading } = useTracker(
+    () => {
+      const editionsHandle = Meteor.subscribe("editions");
+      const countriesHandle = Meteor.subscribe("countries");
+      const udcHandle = Meteor.subscribe("udc");
+      const handle = Meteor.subscribe("books");
+      const invNumbersHandle = Meteor.subscribe("inventory_numbers");
+      const readersHandle = Meteor.subscribe("readers");
+      const abonementhandle = Meteor.subscribe("abonements");
+      const usershandle = Meteor.subscribe("users");
 
-    const editionsHandle = Meteor.subscribe('editions');  
-    const countriesHandle = Meteor.subscribe('countries');
-    const udcHandle = Meteor.subscribe('udc');
-    const handle = Meteor.subscribe('books');
-    const invNumbersHandle = Meteor.subscribe('inventory_numbers');
-    const readersHandle = Meteor.subscribe('readers');
-    const abonementhandle = Meteor.subscribe('abonements')
-    
-    if(!countriesHandle.ready()) {
-      return {countries: []} 
+      if (!countriesHandle.ready()) {
+        return { countries: [] };
+      }
+      if (!editionsHandle.ready()) {
+        return { editions: [] };
+      }
+      if (!udcHandle.ready()) {
+        return { udc: [] };
+      }
+
+      return {
+        books: BooksCollection.find().fetch(),
+        countries: CountryCollection.find().fetch(),
+        editions: EditionsCollection.find().fetch(),
+        udc: UdcCollection.find().fetch(),
+        readers: ReadersCollection.find().fetch(),
+      };
     }
-    if(!editionsHandle.ready()) {
-      return {editions: []}  
-    }
-    if(!udcHandle.ready()) {
-      return {udc: []} 
-    }
-  
-    return {
-      books: BooksCollection.find().fetch(),
-      countries: CountryCollection.find().fetch(),
-      editions: EditionsCollection.find().fetch(),
-      udc: UdcCollection.find().fetch(),
-      readers: ReadersCollection.find().fetch(),
-    };
-  
-  });
+  );
+
+  const handleRegistration = (username, password, confirmPassword) => {
+    Meteor.call(
+      "registerUser",
+      username,
+      password,
+      confirmPassword,
+      (error, result) => {
+        if (error) {
+          alert(error.reason);
+        } else {
+          alert("Регистрация успешна");
+          setIsRegistrationMode(false);
+        }
+      }
+    );
+  };
+
+  const handleLogin = (username, password) => {
+    Meteor.call("login", username, password, (error, result) => {
+      if (error) {
+        alert(error.reason);
+      } else {
+        setIsLoggedIn(true);
+      }
+    });
+  };
 
   const handleShowReaders = () => {
     setShowReadersTable(true);
@@ -116,6 +149,7 @@ export const App = () => {
     setShowSearchForm(true);
     setShowEditForm(false);
     setShowBookManagementForm(false);
+    setShowReadersTable(false);
   };
 
   const handleHideAddForm = () => {
@@ -146,59 +180,117 @@ export const App = () => {
     setShowAddForm(false);
     setShowTable(false);
     setShowEditForm(false);
+  };
+
+  const handleShowLoginForm = () => {
+    setIsRegistrationMode(false);
+  };
+
+  const handleShowRegistrationForm = () => {
+    setIsRegistrationMode(true);
   }
 
   return (
     <div>
-      <div className="panel-container">
-        <button className="button" onClick={handleShowTable}>Показать книги</button>
-        <button className="button" onClick={handleShowAddForm}>Добавить книгу</button>
-        <button className="button" onClick={handleShowDeleteForm}>Удалить книгу</button>
-        <button className="button" onClick={handleShowSearchForm}>Найти книги</button>
-        <button className="button" onClick={handleShowEditForm}>Редактировать книги</button>
-        <button className="button" onClick={handleShowReaders}>Показать читателей</button>
-        <button className="button" onClick={handleShowBookManagementForm}>Добавить/Удалить книгу читателю</button>
-      </div>
-
-      <div className="content">
-        <div className="content-wrapper">
-        {showTable && (
-          <>
-            {isLoading ? (
-              <p>Loading...</p>
-            ) : (
-              <>
-                {showReadersTable ? (
-                  <ReadersTable readers={readers} />
-                ) : (
-                  <BookTable books={searchResults.length > 0 ? searchResults : books} />
-                )}
-              </>
-            )}
-          </>
-        )}
-
-        {showAddForm && <AddBookForm onAddBook={handleShowTable} onHideForm={handleHideAddForm} />}
-        {showDeleteForm && <DeleteBookForm onDeleteBook={handleShowDeleteForm} onHideForm={handleHideDeleteForm} />}
-        {showSearchForm && (
-          <SearchBookForm
-            books={books}
-            onSearch={setSearchResults}
-            onHideForm={handleHideSearchForm}
-          />
-        )}
-        {showEditForm && (
-          <EditBookForm
-            books={books}
-            selectedBook={selectedBook}
-            selectedField={selectedField}
-            onEditBook={handleHideEditForm}
-          />
-        )}
-         {showBookManagementForm && <BookManagement />}
+      {!isLoggedIn && !isRegistrationMode && (
+        <div className="welcome-form">
+          <h1>Добро пожаловать в библиотеку!</h1>
+          <LoginForm onLogin={handleLogin} />
+          <button onClick={handleShowRegistrationForm}>Регистрация</button>
         </div>
-      </div>
+      )}
+      {!isLoggedIn && isRegistrationMode && (
+        <div className="welcome-form">
+          <h1>Регистрация</h1>
+          <RegistrationForm onRegister={handleRegistration} />
+          <button onClick={handleShowLoginForm}>Назад к входу</button>
+        </div>
+      )}
+      {isLoggedIn && (
+        <div>
+          <div className="panel-container">
+            <button className="button" onClick={handleShowTable}>
+              Показать книги
+            </button>
+            <button className="button" onClick={handleShowAddForm}>
+              Добавить книгу
+            </button>
+            <button className="button" onClick={handleShowDeleteForm}>
+              Удалить книгу
+            </button>
+            <button className="button" onClick={handleShowSearchForm}>
+              Найти книги
+            </button>
+            <button className="button" onClick={handleShowEditForm}>
+              Редактировать книги
+            </button>
+            <button className="button" onClick={handleShowReaders}>
+              Показать читателей
+            </button>
+            <button className="button" onClick={handleShowBookManagementForm}>
+              Добавить/Удалить книгу читателю
+            </button>
+            <button className="button" onClick={() => setIsLoggedIn(false)}>
+              Выйти
+            </button>
+          </div>
+
+          <div className="content">
+            <div className="content-wrapper">
+              <div className="content-wrapper">
+                {showTable && (
+                  <>
+                    {isLoading ? (
+                      <p>Loading...</p>
+                    ) : (
+                      <>
+                        {showReadersTable ? (
+                          <ReadersTable readers={readers} />
+                        ) : (
+                          <BookTable
+                            books={
+                              searchResults.length > 0 ? searchResults : books
+                            }
+                          />
+                        )}
+                      </>
+                    )}
+                  </>
+                )}
+
+                {showAddForm && (
+                  <AddBookForm
+                    onAddBook={handleShowTable}
+                    onHideForm={handleHideAddForm}
+                  />
+                )}
+                {showDeleteForm && (
+                  <DeleteBookForm
+                    onDeleteBook={handleShowDeleteForm}
+                    onHideForm={handleHideDeleteForm}
+                  />
+                )}
+                {showSearchForm && (
+                  <SearchBookForm
+                    books={books}
+                    onSearch={setSearchResults}
+                    onHideForm={handleHideSearchForm}
+                  />
+                )}
+                {showEditForm && (
+                  <EditBookForm
+                    books={books}
+                    selectedBook={selectedBook}
+                    selectedField={selectedField}
+                    onEditBook={handleHideEditForm}
+                  />
+                )}
+                {showBookManagementForm && <BookManagement />}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
-

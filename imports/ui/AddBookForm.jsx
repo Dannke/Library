@@ -33,7 +33,7 @@ export const AddBookForm = ({ onAddBook }) => {
   const handleAddBook = () => {
     if (Object.values(bookData).every((value) => value !== "")) {
       const count = bookData.count;
-      Meteor.call("addBook", bookData, count, (error, result) => {
+      Meteor.call("addBook", bookData, count, (error) => {
         if (!error) {
           onAddBook(); // Сообщаем родительскому компоненту об успешном добавлении
           setBookData({

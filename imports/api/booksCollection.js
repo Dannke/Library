@@ -22,8 +22,6 @@ const validateUdc = value => {
   return udcIds.includes(value);
 }
 
-
-
 const BooksSchema = new SimpleSchema({
   title: { type: String },
   author: { type: String },
@@ -46,4 +44,3 @@ const BooksSchema = new SimpleSchema({
   }
 });
 
-BooksCollection.attachSchema(BooksSchema);

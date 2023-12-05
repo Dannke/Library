@@ -8,22 +8,7 @@ import { EditionsCollection } from "../imports/api/editionsCollection";
 import { UdcCollection } from "../imports/api/udcCollection";
 import { inventoryNumbersCollection } from "../imports/api/inventoryNumbersCollection";
 import { AbonementCollection } from "../imports/api/abonementCollection";
-
-
-function insertBook(bookData) {
-  // Проверяем, что bookData соответствует схеме BooksCollection
-  check(bookData, {
-    title: String,
-    author: String,
-    year: Number,
-    country: String,
-    edition: String,
-    udc: String,
-    count: Number,
-  });
-
-  return BooksCollection.insert(bookData);
-}
+import { UsersCollection } from "../imports/api/usersCollection";
 
 function deleteBook(bookTitle) {
   check(bookTitle, String);
@@ -48,6 +33,13 @@ function generateBookNumber() {
 }
 
 Meteor.startup(async () => {
+  if (UsersCollection.find().count() === 0) {
+    UsersCollection.insert({
+      username: "admin",
+      password: "123",
+      role: "admin",
+    });
+  }
   Meteor.publish("books", function () {
     return BooksCollection.find();
   });
@@ -76,11 +68,15 @@ Meteor.startup(async () => {
     return countries;
   });
 
+  Meteor.publish("users", function () {
+    const users = UsersCollection.find();
+    return users;
+  });
+
   Meteor.methods({
     addBook(bookData, count) {
       const bookId = BooksCollection.insert(bookData);
 
-      // Генерируем уникальные номера
       for (let i = 0; i < count; i++) {
         const number = generateBookNumber();
 
@@ -97,24 +93,33 @@ Meteor.startup(async () => {
     editBookField: function (bookId, field, value) {
       check(bookId, String);
       check(field, String);
-  
-      const allowedFields = ["title", "author", "year", "country", "edition", "udc"];
-  
+
+      const allowedFields = [
+        "title",
+        "author",
+        "year",
+        "country",
+        "edition",
+        "udc",
+      ];
+
       if (!allowedFields.includes(field)) {
-        throw new Meteor.Error("invalid-field", "Попытка редактирования недопустимого поля.");
+        throw new Meteor.Error(
+          "invalid-field",
+          "Попытка редактирования недопустимого поля."
+        );
       }
-  
+
       const update = {};
       update[field] = value;
-  
-      // Обновляем данные в коллекции BooksCollection
       BooksCollection.update(bookId, { $set: update });
-  
+
       // Если изменено название книги, обновляем соответствующие инвентарные номера
       if (field === "title") {
-        // Находим все документы, которые содержат старое _id книги
-        const inventoryNumbersToUpdate = inventoryNumbersCollection.find({ bookId: bookId }).fetch();
-  
+        const inventoryNumbersToUpdate = inventoryNumbersCollection
+          .find({ bookId: bookId })
+          .fetch();
+
         // Обновляем каждый документ в коллекции inventoryNumbersCollection
         inventoryNumbersToUpdate.forEach((inventoryNumber) => {
           inventoryNumbersCollection.update(
@@ -128,17 +133,20 @@ Meteor.startup(async () => {
       check(readerId, String);
       check(bookId, String);
       check(issueDate, Date);
-      
+
       // Проверяем, если deliveryDate предоставлен, он должен быть датой
       if (deliveryDate && !(deliveryDate instanceof Date)) {
-        throw new Meteor.Error("invalid-date", "Дата возврата должна быть объектом Date");
+        throw new Meteor.Error(
+          "invalid-date",
+          "Дата возврата должна быть объектом Date"
+        );
       }
       const abonementData = {
         id_reader: readerId,
         book_number_id: bookId,
         issue_date: issueDate,
       };
-  
+
       // Если deliveryDate предоставлен, добавляем его в abonementData
       if (deliveryDate) {
         abonementData.delivery_date = deliveryDate;
@@ -148,17 +156,51 @@ Meteor.startup(async () => {
     removeBookFromAbonement: function (readerId, bookId) {
       check(readerId, String);
       check(bookId, String);
-  
+
       const abonementData = {
         id_reader: readerId,
         book_number_id: bookId,
       };
-  
-      // Находим документ в коллекции abonement и удаляем его
+
       const abonementEntry = AbonementCollection.findOne(abonementData);
       if (abonementEntry) {
         AbonementCollection.remove(abonementEntry._id);
       }
+    },
+    login(username, password) {
+      check(username, String);
+      check(password, String);
+
+      const user = UsersCollection.findOne({ username });
+
+      if (!user || user.password !== password) {
+        throw new Meteor.Error("Login failed");
+      }
+
+      return {
+        username: user.username,
+        role: user.role,
+      };
+    },
+    registerUser(username, password, confirmPassword) {
+      check(username, String);
+      check(password, String);
+      check(confirmPassword, String);
+
+      if (password !== confirmPassword) {
+        throw new Meteor.Error("password-mismatch", "Пароли не совпадают");
+      }
+
+      if (UsersCollection.findOne({ username })) {
+        throw new Meteor.Error(
+          "user-exists",
+          "Пользователь с таким логином уже существует"
+        );
+      }
+      role = "user";
+      UsersCollection.insert({ username, password, role });
+
+      return "Успешно!";
     },
   });
 });
