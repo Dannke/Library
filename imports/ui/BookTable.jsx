@@ -1,5 +1,6 @@
 // ui/BookTable.jsx
 import React from "react";
+import "../Styles/BookTable.css";
 
 export const BookTable = ({ books }) => {
   return (
@@ -19,13 +20,27 @@ export const BookTable = ({ books }) => {
         <tbody>
           {books.map((book) => (
             <tr key={book._id}>
-              <td className="header-container">{book.title}</td>
-              <td className="header-container">{book.author}</td>
-              <td className="header-container">{book.year}</td>
-              <td className="header-container">{book.country}</td>
-              <td className="header-container">{book.edition}</td>
-              <td className="header-container">{book.udc}</td>
-              <td className="header-container">{book.count}</td>
+              <td className="content-container" data-label="Название">
+                {book.title}
+              </td>
+              <td className="content-container" data-label="Автор">
+                {book.author}
+              </td>
+              <td className="content-container" data-label="Год">
+                {book.year}
+              </td>
+              <td className="content-container" data-label="Страна">
+                {book.country}
+              </td>
+              <td className="content-container" data-label="Издательство">
+                {book.edition}
+              </td>
+              <td className="content-container" data-label="UDC">
+                {book.udc}
+              </td>
+              <td className="content-container" data-label="Количество">
+                {book.count}
+              </td>
             </tr>
           ))}
         </tbody>

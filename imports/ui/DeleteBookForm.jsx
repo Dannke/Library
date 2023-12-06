@@ -32,7 +32,7 @@ export const DeleteBookForm = ({ onDeleteBook, onHideForm }) => {
           onChange={(e) => setBookTitle(e.target.value)}
         />
       </div>
-      <button onClick={handleDeleteBook}>Удалить</button>
+      <button className="small-button" onClick={handleDeleteBook}>Удалить</button>
     </div>
   );
 };

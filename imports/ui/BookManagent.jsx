@@ -103,7 +103,7 @@ export const BookManagement = () => {
         </div>
       )}
 
-      <button onClick={handleAction}>Применить</button>
+      <button className="small-button" onClick={handleAction}>Применить</button>
     </div>
   );
 };

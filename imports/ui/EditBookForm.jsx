@@ -123,8 +123,9 @@ export const EditBookForm = ({ books, onEditBook, onHideForm }) => {
         <label>Введите новое значение:</label>
         {renderFieldForm()}
       </div>
-      <button onClick={handleEditBook}>Применить</button>
-      <button onClick={onHideForm}>Отмена</button>
+      <button className="small-button" onClick={handleEditBook}>Применить</button>
+      <div className="button-spacing"></div>
+      <button className="small-button" onClick={onHideForm}>Отмена</button>
     </div>
   );
 };

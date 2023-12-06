@@ -75,6 +75,31 @@ Meteor.startup(async () => {
 
   Meteor.methods({
     addBook(bookData, count) {
+      if (bookData.year < 0) {
+        throw new Meteor.Error(
+          "year-below-zero",
+          "Год не может быть отрицательным."
+        );
+      } else if (bookData.year > 2023) {
+        throw new Meteor.Error(
+          "year-hight",
+          "Год не может быть больше текущего."
+        );
+      }
+
+      if (/\d/.test(bookData.author)) {
+        throw new Meteor.Error(
+          "author-int",
+          "В поле `Автор` могут быть только буквы."
+        );
+      }
+
+      if (count < 0) {
+        throw new Meteor.Error(
+          "count-below-zero",
+          "Количество не может быть отрицательным."
+        );
+      }
       const bookId = BooksCollection.insert(bookData);
 
       for (let i = 0; i < count; i++) {
@@ -88,7 +113,14 @@ Meteor.startup(async () => {
       return bookId;
     },
     deleteBook: function (bookTitle) {
-      deleteBook(bookTitle);
+      if (BooksCollection.findOne({ title: bookTitle })) {
+        deleteBook(bookTitle);
+      } else {
+        throw new Meteor.Error(
+          "unknow-book",
+          "Данной книги нет в базе данных."
+        );
+      }
     },
     editBookField: function (bookId, field, value) {
       check(bookId, String);

@@ -23,8 +23,9 @@ export const SearchBookForm = ({ books, onSearch, onHideForm }) => {
           onChange={(e) => setSearchTitle(e.target.value)}
         />
       </div>
-      <button onClick={handleSearch}>Найти</button>
-      <button onClick={onHideForm}>Отмена</button>
+      <button className="small-button" onClick={handleSearch}>Найти</button>
+      <div className="button-spacing"></div>
+      <button className="small-button" onClick={onHideForm}>Отмена</button>
     </div>
   );
 };

@@ -1,11 +1,3 @@
-.panel {
-  background-color: #807c7c;
-  padding: 10px;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  z-index: 1;
-}
 
 .content {
   display: flex;
@@ -38,27 +30,10 @@ select {
   text-align: center;
 }
 
-.table-container {
-  width: 100%;
-  margin: 20px auto;
-  overflow-x: auto;
-}
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
 
-th,
-td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
 
-th {
-  background-color: #f2f2f2;
-}
+
 
 /* Дополнительные стили для кнопок и других элементов */
 .button {
@@ -103,7 +78,7 @@ th {
 /* Добавьте класс .body-container к вашему телу body для стилизации */
 body {
   margin: 0;
-  background-color: rgb(148, 135, 175);
+  background-color: rgb(212, 212, 212);
   font-family: Arial, sans-serif;
 }
 
@@ -113,3 +88,5 @@ body {
   top: 0;
   z-index: 1;
 }
+
+

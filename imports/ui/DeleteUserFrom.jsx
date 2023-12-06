@@ -4,7 +4,7 @@ import { useTracker } from "meteor/react-meteor-data";
 import { UsersCollection } from "../api/usersCollection";
 
 export const DeleteUserForm = ({ onDeleteUser, onHideForm }) => {
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
 
   const [selectedUserId, setSelectedUserId] = useState(null);
 
@@ -22,42 +22,44 @@ export const DeleteUserForm = ({ onDeleteUser, onHideForm }) => {
 
   const handleDeleteUser = () => {
     const selectedUser = users.find((user) => user.username === username);
-  
+
     if (selectedUser) {
       Meteor.call("deleteUser", selectedUser._id, (error) => {
         if (error) {
           alert("Ошибка при удалении пользователя: " + error.reason);
         } else {
           alert("Пользователь успешно удален");
-          onDeleteUser(); // Добавим функцию onDeleteUser после успешного удаления
+          onDeleteUser();
         }
       });
     }
   };
-  
 
   return (
     <div>
-      <h2>Удалить пользователя</h2> 
-      <select 
-        value={username}
-        onChange={e => setUsername(e.target.value)}  
-      >
-        <option>--Выбрать пользователя--</option>
-        {users.map(u => (
-          <option key={u._id} value={u.username}>
-            {u.username}
-          </option>
-        ))}
-      </select>
-      <button 
+      <div className="form-field">
+        <h2 className="HeaderForm">Удалить пользователя</h2>
+        <label>Пользователь:</label>
+        <select value={username} onChange={(e) => setUsername(e.target.value)}>
+          <option>--Выбрать пользователя--</option>
+          {users.map((u) => (
+            <option key={u._id} value={u.username}>
+              {u.username}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <button
+        className="small-button"
         onClick={handleDeleteUser}
-        disabled={!username}  
+        disabled={!username}
       >
         Удалить
       </button>
-      <button onClick={onHideForm}>
-        Закрыть форму
+      <div className="button-spacing"></div>
+      <button className="small-button" onClick={onHideForm}>
+        Назад
       </button>
     </div>
   );

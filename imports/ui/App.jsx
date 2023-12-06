@@ -18,6 +18,7 @@ import { UsersCollection } from "../api/usersCollection.js";
 import { RegistrationForm } from "./RegistrationForm.jsx";
 import { UsersTable } from "./UsersTable.jsx";
 import { DeleteUserForm } from "./DeleteUserFrom.jsx";
+import "../Styles/NavBar.css"
 
 export const App = () => {
   const [showTable, setShowTable] = useState(false);
@@ -203,48 +204,32 @@ export const App = () => {
   const handleShowUsersTable = () => {
     setShowTable(true);
     setShowDeleteUserForm(false);
-  }
+  };
 
-  const UserPanel = () => (
-    <div className="panel-container">
-      <button className="button" onClick={handleShowTable}>
-        Показать книги
-      </button>
-      <button className="button" onClick={handleShowAddForm}>
-        Добавить книгу
-      </button>
-      <button className="button" onClick={handleShowDeleteForm}>
-        Удалить книгу
-      </button>
-      <button className="button" onClick={handleShowSearchForm}>
-        Найти книги
-      </button>
-      <button className="button" onClick={handleShowEditForm}>
-        Редактировать книги
-      </button>
-      <button className="button" onClick={handleShowReaders}>
-        Показать читателей
-      </button>
-      <button className="button" onClick={handleShowBookManagementForm}>
-        Добавить/Удалить книгу читателю
-      </button>
-      <button className="button" onClick={() => setIsLoggedIn(false)}>
-        Выйти
-      </button>
-    </div>
+  const NavbarButton = ({ onClick, children }) => (
+    <button className="navbar-button" onClick={onClick}>
+      {children}
+    </button>
   );
 
+  const UserPanel = () => (
+    <div className="navbar-container">
+      <NavbarButton onClick={handleShowTable}>Показать книги</NavbarButton>
+      <NavbarButton onClick={handleShowAddForm}>Добавить книгу</NavbarButton>
+      <NavbarButton onClick={handleShowDeleteForm}>Удалить книгу</NavbarButton>
+      <NavbarButton onClick={handleShowSearchForm}>Найти книги</NavbarButton>
+      <NavbarButton onClick={handleShowEditForm}>Редактировать книги</NavbarButton>
+      <NavbarButton onClick={handleShowReaders}>Показать читателей</NavbarButton>
+      <NavbarButton onClick={handleShowBookManagementForm}>Добавить/Удалить книгу читателю</NavbarButton>
+      <NavbarButton onClick={() => setIsLoggedIn(false)}>Выйти</NavbarButton>
+    </div>
+  );
+  
   const AdminPanel = () => (
-    <div className="panel-container">
-      <button className="button" onClick={() => handleShowDeleteUserForm(true)}>
-        Удалить пользователя
-      </button>
-      <button className="button" onClick={() => handleShowUsersTable(false)}>
-        Показать пользователей
-      </button>
-      <button className="button" onClick={() => setIsLoggedIn(false)}>
-        Выйти
-      </button>
+    <div className="navbar-container">
+      <NavbarButton onClick={() => handleShowDeleteUserForm(true)}>Удалить пользователя</NavbarButton>
+      <NavbarButton onClick={() => handleShowUsersTable(false)}>Показать пользователей</NavbarButton>
+      <NavbarButton onClick={() => setIsLoggedIn(false)}>Выйти</NavbarButton>
     </div>
   );
 
@@ -253,15 +238,19 @@ export const App = () => {
       {!isLoggedIn && !isRegistrationMode && (
         <div className="welcome-form">
           <h1>Добро пожаловать в библиотеку!</h1>
-          <LoginForm onLogin={handleLogin} />
-          <button onClick={handleShowRegistrationForm}>Регистрация</button>
+          <LoginForm
+            onLogin={handleLogin}
+            onShowRegistrationForm={handleShowRegistrationForm}
+          />
         </div>
       )}
       {!isLoggedIn && isRegistrationMode && (
         <div className="welcome-form">
           <h1>Регистрация</h1>
-          <RegistrationForm onRegister={handleRegistration} />
-          <button onClick={handleShowLoginForm}>Назад к входу</button>
+          <RegistrationForm
+            onRegister={handleRegistration}
+            onCancelRegistration={handleShowLoginForm}
+          />
         </div>
       )}
       {isLoggedIn && userRole === "user" && (
@@ -326,10 +315,8 @@ export const App = () => {
           <AdminPanel />
           <div className="content">
             <div className="content-wrapper">
-              {showTable && (
-                <UsersTable users={users} />
-              )}
-              
+              {showTable && <UsersTable users={users} />}
+
               {showDeleteUserForm && (
                 <DeleteUserForm
                   onDeleteUser={() => {

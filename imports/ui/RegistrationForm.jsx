@@ -1,7 +1,8 @@
 // ui/RegistrationForm.jsx
 import React, { useState } from "react";
+import "../Styles/RegistrationForm.css";
 
-export const RegistrationForm = ({ onRegister }) => {
+export const RegistrationForm = ({ onRegister, onCancelRegistration  }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -10,8 +11,12 @@ export const RegistrationForm = ({ onRegister }) => {
     onRegister(username, password, confirmPassword);
   };
 
+  const handleCancelRegistration = () => {
+    onCancelRegistration();
+  };
+
   return (
-    <div className="registration-form">
+    <div className="registration-form form">
       <div className="form-field">
         <label>Логин:</label>
         <input
@@ -37,6 +42,8 @@ export const RegistrationForm = ({ onRegister }) => {
         />
       </div>
       <button onClick={handleRegister}>Зарегистрироваться</button>
+      <div className="button-spacing"></div>
+      <button onClick={handleCancelRegistration}>Назад к входу</button>
     </div>
   );
 };

@@ -18,12 +18,12 @@ export const ReadersTable = ({ readers }) => {
         <tbody>
           {readers.map((reader) => (
             <tr key={reader._id}>
-              <td className="header-container">{reader.name}</td>
-              <td className="header-container">{reader.surname}</td>
-              <td className="header-container">{reader.patronymic}</td>
-              <td className="header-container">{reader.telephone}</td>
-              <td className="header-container">{reader.adress}</td>
-              <td className="header-container">{reader.dateRegistration.toLocaleDateString()}</td>
+              <td className="content-container">{reader.name}</td>
+              <td className="content-container">{reader.surname}</td>
+              <td className="content-container">{reader.patronymic}</td>
+              <td className="content-container">{reader.telephone}</td>
+              <td className="content-container">{reader.adress}</td>
+              <td className="content-container">{reader.dateRegistration.toLocaleDateString()}</td>
             </tr>
           ))}
         </tbody>
