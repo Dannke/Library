@@ -6,7 +6,6 @@ export const LoginForm = ({ onLogin }) => {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // Вызовите функцию обработки входа и передайте ей имя пользователя и пароль
     onLogin(username, password);
   };
 

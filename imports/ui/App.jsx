@@ -16,6 +16,8 @@ import { BookManagement } from "./BookManagent.jsx";
 import { LoginForm } from "./LoginForm.jsx";
 import { UsersCollection } from "../api/usersCollection.js";
 import { RegistrationForm } from "./RegistrationForm.jsx";
+import { UsersTable } from "./UsersTable.jsx";
+import { DeleteUserForm } from "./DeleteUserFrom.jsx";
 
 export const App = () => {
   const [showTable, setShowTable] = useState(false);
@@ -30,9 +32,11 @@ export const App = () => {
   const [showBookManagementForm, setShowBookManagementForm] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isRegistrationMode, setIsRegistrationMode] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+  const [showDeleteUserForm, setShowDeleteUserForm] = useState(false);
 
-  const { books, countries, editions, udc, readers, isLoading } = useTracker(
-    () => {
+  const { books, countries, editions, udc, readers, users, isLoading } =
+    useTracker(() => {
       const editionsHandle = Meteor.subscribe("editions");
       const countriesHandle = Meteor.subscribe("countries");
       const udcHandle = Meteor.subscribe("udc");
@@ -40,7 +44,7 @@ export const App = () => {
       const invNumbersHandle = Meteor.subscribe("inventory_numbers");
       const readersHandle = Meteor.subscribe("readers");
       const abonementhandle = Meteor.subscribe("abonements");
-      const usershandle = Meteor.subscribe("users");
+      const usersHandle = Meteor.subscribe("users");
 
       if (!countriesHandle.ready()) {
         return { countries: [] };
@@ -58,9 +62,9 @@ export const App = () => {
         editions: EditionsCollection.find().fetch(),
         udc: UdcCollection.find().fetch(),
         readers: ReadersCollection.find().fetch(),
+        users: UsersCollection.find().fetch(),
       };
-    }
-  );
+    });
 
   const handleRegistration = (username, password, confirmPassword) => {
     Meteor.call(
@@ -85,6 +89,7 @@ export const App = () => {
         alert(error.reason);
       } else {
         setIsLoggedIn(true);
+        setUserRole(result.role);
       }
     });
   };
@@ -188,7 +193,60 @@ export const App = () => {
 
   const handleShowRegistrationForm = () => {
     setIsRegistrationMode(true);
+  };
+
+  const handleShowDeleteUserForm = () => {
+    setShowDeleteUserForm(true);
+    setShowTable(false);
+  };
+
+  const handleShowUsersTable = () => {
+    setShowTable(true);
+    setShowDeleteUserForm(false);
   }
+
+  const UserPanel = () => (
+    <div className="panel-container">
+      <button className="button" onClick={handleShowTable}>
+        Показать книги
+      </button>
+      <button className="button" onClick={handleShowAddForm}>
+        Добавить книгу
+      </button>
+      <button className="button" onClick={handleShowDeleteForm}>
+        Удалить книгу
+      </button>
+      <button className="button" onClick={handleShowSearchForm}>
+        Найти книги
+      </button>
+      <button className="button" onClick={handleShowEditForm}>
+        Редактировать книги
+      </button>
+      <button className="button" onClick={handleShowReaders}>
+        Показать читателей
+      </button>
+      <button className="button" onClick={handleShowBookManagementForm}>
+        Добавить/Удалить книгу читателю
+      </button>
+      <button className="button" onClick={() => setIsLoggedIn(false)}>
+        Выйти
+      </button>
+    </div>
+  );
+
+  const AdminPanel = () => (
+    <div className="panel-container">
+      <button className="button" onClick={() => handleShowDeleteUserForm(true)}>
+        Удалить пользователя
+      </button>
+      <button className="button" onClick={() => handleShowUsersTable(false)}>
+        Показать пользователей
+      </button>
+      <button className="button" onClick={() => setIsLoggedIn(false)}>
+        Выйти
+      </button>
+    </div>
+  );
 
   return (
     <div>
@@ -206,87 +264,80 @@ export const App = () => {
           <button onClick={handleShowLoginForm}>Назад к входу</button>
         </div>
       )}
-      {isLoggedIn && (
+      {isLoggedIn && userRole === "user" && (
         <div>
-          <div className="panel-container">
-            <button className="button" onClick={handleShowTable}>
-              Показать книги
-            </button>
-            <button className="button" onClick={handleShowAddForm}>
-              Добавить книгу
-            </button>
-            <button className="button" onClick={handleShowDeleteForm}>
-              Удалить книгу
-            </button>
-            <button className="button" onClick={handleShowSearchForm}>
-              Найти книги
-            </button>
-            <button className="button" onClick={handleShowEditForm}>
-              Редактировать книги
-            </button>
-            <button className="button" onClick={handleShowReaders}>
-              Показать читателей
-            </button>
-            <button className="button" onClick={handleShowBookManagementForm}>
-              Добавить/Удалить книгу читателю
-            </button>
-            <button className="button" onClick={() => setIsLoggedIn(false)}>
-              Выйти
-            </button>
-          </div>
-
+          <UserPanel />
           <div className="content">
             <div className="content-wrapper">
-              <div className="content-wrapper">
-                {showTable && (
-                  <>
-                    {isLoading ? (
-                      <p>Loading...</p>
-                    ) : (
-                      <>
-                        {showReadersTable ? (
-                          <ReadersTable readers={readers} />
-                        ) : (
-                          <BookTable
-                            books={
-                              searchResults.length > 0 ? searchResults : books
-                            }
-                          />
-                        )}
-                      </>
-                    )}
-                  </>
-                )}
+              {showTable && (
+                <>
+                  {isLoading ? (
+                    <p>Loading...</p>
+                  ) : (
+                    <>
+                      {showReadersTable ? (
+                        <ReadersTable readers={readers} />
+                      ) : (
+                        <BookTable
+                          books={
+                            searchResults.length > 0 ? searchResults : books
+                          }
+                        />
+                      )}
+                    </>
+                  )}
+                </>
+              )}
 
-                {showAddForm && (
-                  <AddBookForm
-                    onAddBook={handleShowTable}
-                    onHideForm={handleHideAddForm}
-                  />
-                )}
-                {showDeleteForm && (
-                  <DeleteBookForm
-                    onDeleteBook={handleShowDeleteForm}
-                    onHideForm={handleHideDeleteForm}
-                  />
-                )}
-                {showSearchForm && (
-                  <SearchBookForm
-                    books={books}
-                    onSearch={setSearchResults}
-                    onHideForm={handleHideSearchForm}
-                  />
-                )}
-                {showEditForm && (
-                  <EditBookForm
-                    books={books}
-                    selectedBook={selectedBook}
-                    selectedField={selectedField}
-                    onEditBook={handleHideEditForm}
-                  />
-                )}
-                {showBookManagementForm && <BookManagement />}
-              </div>
+              {showAddForm && (
+                <AddBookForm
+                  onAddBook={handleShowTable}
+                  onHideForm={handleHideAddForm}
+                />
+              )}
+              {showDeleteForm && (
+                <DeleteBookForm
+                  onDeleteBook={handleShowDeleteForm}
+                  onHideForm={handleHideDeleteForm}
+                />
+              )}
+              {showSearchForm && (
+                <SearchBookForm
+                  books={books}
+                  onSearch={setSearchResults}
+                  onHideForm={handleHideSearchForm}
+                />
+              )}
+              {showEditForm && (
+                <EditBookForm
+                  books={books}
+                  selectedBook={selectedBook}
+                  selectedField={selectedField}
+                  onEditBook={handleHideEditForm}
+                />
+              )}
+              {showBookManagementForm && <BookManagement />}
+            </div>
+          </div>
+        </div>
+      )}
+      {isLoggedIn && userRole === "admin" && (
+        <div>
+          <AdminPanel />
+          <div className="content">
+            <div className="content-wrapper">
+              {showTable && (
+                <UsersTable users={users} />
+              )}
+              
+              {showDeleteUserForm && (
+                <DeleteUserForm
+                  onDeleteUser={() => {
+                    setShowDeleteUserForm(false);
+                  }}
+                  onHideForm={() => setShowDeleteUserForm(false)}
+                />
+              )}
             </div>
           </div>
         </div>

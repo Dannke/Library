@@ -1,3 +1,4 @@
+// api/UsersCollection.js
 import { Mongo } from "meteor/mongo";
 import SimpleSchema from "simpl-schema";
 
@@ -16,18 +17,5 @@ const UsersSchema = new SimpleSchema({
     allowedValues: ["admin", "user"],
   },
 });
-
-// UsersSchema.extend({
-//   username: {
-//     type: String,
-//     optional: true,
-//     custom: function () {
-//       const existingUser = UsersCollection.findOne({ username: this.value });
-//       if (existingUser) {
-//         return "notUnique";
-//       }
-//     },
-//   },
-// });
 
 UsersCollection.attachSchema(UsersSchema);

@@ -197,10 +197,21 @@ Meteor.startup(async () => {
           "Пользователь с таким логином уже существует"
         );
       }
-      role = "user";
+      const role = "user";
       UsersCollection.insert({ username, password, role });
 
       return "Успешно!";
+    },
+    deleteUser(userId) {
+      const userToDelete = UsersCollection.findOne(userId);
+      if (userToDelete && userToDelete.role !== "admin") {
+        UsersCollection.remove(userId);
+      } else {
+        throw new Meteor.Error(
+          "delete-admin-error",
+          "Невозможно удалить администратора"
+        );
+      }
     },
   });
 });
