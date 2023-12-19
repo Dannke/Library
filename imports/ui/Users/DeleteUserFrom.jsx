@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Meteor } from "meteor/meteor";
 import { useTracker } from "meteor/react-meteor-data";
-import { UsersCollection } from "../api/usersCollection";
+import { UsersCollection } from "../../api/usersCollection";
+import { ToastContainer, toast } from "react-toastify";
 
 export const DeleteUserForm = ({ onDeleteUser, onHideForm }) => {
   const [username, setUsername] = useState("");
-
+  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
 
   const { users, isLoading } = useTracker(() => {
@@ -21,14 +22,18 @@ export const DeleteUserForm = ({ onDeleteUser, onHideForm }) => {
   });
 
   const handleDeleteUser = () => {
+    setIsDeleting(true);
     const selectedUser = users.find((user) => user.username === username);
 
     if (selectedUser) {
       Meteor.call("deleteUser", selectedUser._id, (error) => {
+        setIsDeleting(false);
         if (error) {
-          alert("Ошибка при удалении пользователя: " + error.reason);
+          toast.error("Ошибка: " + error.reason)
+          //alert("Ошибка при удалении пользователя: " + error.reason);
         } else {
-          alert("Пользователь успешно удален");
+          toast.success("Пользователь успешно удален");
+          //alert("Пользователь успешно удален");
           onDeleteUser();
         }
       });
@@ -37,6 +42,7 @@ export const DeleteUserForm = ({ onDeleteUser, onHideForm }) => {
 
   return (
     <div>
+      <ToastContainer />
       <div className="form-field">
         <h2 className="HeaderForm">Удалить пользователя</h2>
         <label>Пользователь:</label>

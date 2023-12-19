@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Meteor } from "meteor/meteor";
-import { BooksCollection } from "../api/booksCollection";
+import { BooksCollection } from "../../api/booksCollection";
 import { useTracker } from "meteor/react-meteor-data";
-import { CountryCollection } from "../api/countryCollection";
-import { EditionsCollection } from "../api/editionsCollection";
-import { UdcCollection } from "../api/udcCollection";
+import { CountryCollection } from "../../api/countryCollection";
+import { EditionsCollection } from "../../api/editionsCollection";
+import { UdcCollection } from "../../api/udcCollection";
 
 export const EditBookForm = ({ books, onEditBook, onHideForm }) => {
   const [selectedBookId, setSelectedBookId] = useState("");
@@ -37,14 +37,20 @@ export const EditBookForm = ({ books, onEditBook, onHideForm }) => {
       update[selectedField] = newValue;
     }
 
-    Meteor.call("editBookField", selectedBookId, selectedField, newValue, (error, result) => {
+    Meteor.call(
+      "editBookField",
+      selectedBookId,
+      selectedField,
+      newValue,
+      (error, result) => {
         if (!error) {
           onEditBook(); // Сообщаем родительскому компоненту об успешном редактировании
           onHideForm();
         } else {
           alert(`Ошибка при редактировании книги: ${error.reason}`);
         }
-      });
+      }
+    );
   };
 
   const renderFieldForm = () => {
@@ -97,7 +103,10 @@ export const EditBookForm = ({ books, onEditBook, onHideForm }) => {
       <h2 className="HeaderForm">Редактировать книгу</h2>
       <div className="form-field">
         <label>Выберите книгу:</label>
-        <select value={selectedBookId} onChange={(e) => setSelectedBookId(e.target.value)}>
+        <select
+          value={selectedBookId}
+          onChange={(e) => setSelectedBookId(e.target.value)}
+        >
           <option value="">-- Выберите книгу --</option>
           {books.map((book) => (
             <option key={book._id} value={book._id}>
@@ -108,7 +117,10 @@ export const EditBookForm = ({ books, onEditBook, onHideForm }) => {
       </div>
       <div className="form-field">
         <label>Выберите поле для редактирования:</label>
-        <select value={selectedField} onChange={(e) => setSelectedField(e.target.value)}>
+        <select
+          value={selectedField}
+          onChange={(e) => setSelectedField(e.target.value)}
+        >
           <option value="">-- Выберите поле --</option>
           <option value="title">Название</option>
           <option value="author">Автор</option>
@@ -123,9 +135,13 @@ export const EditBookForm = ({ books, onEditBook, onHideForm }) => {
         <label>Введите новое значение:</label>
         {renderFieldForm()}
       </div>
-      <button className="small-button" onClick={handleEditBook}>Применить</button>
+      <button className="small-button" onClick={handleEditBook}>
+        Применить
+      </button>
       <div className="button-spacing"></div>
-      <button className="small-button" onClick={onHideForm}>Отмена</button>
+      <button className="small-button" onClick={onHideForm}>
+        Отмена
+      </button>
     </div>
   );
 };

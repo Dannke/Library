@@ -2,23 +2,23 @@
 import React, { useState } from "react";
 import { useTracker } from "meteor/react-meteor-data";
 import { BooksCollection } from "../api/booksCollection.js";
-import { BookTable } from "./BookTable.jsx";
-import { AddBookForm } from "./AddBookForm.jsx";
-import { DeleteBookForm } from "./DeleteBookForm.jsx";
-import { SearchBookForm } from "./SearchBookForm.jsx";
+import { BookTable } from "./Books/BookTable.jsx";
+import { AddBookForm } from "./Books/AddBookForm.jsx";
+import { DeleteBookForm } from "./Books/DeleteBookForm.jsx";
+import { SearchBookForm } from "./Books/SearchBookForm.jsx";
 import { CountryCollection } from "../api/countryCollection.js";
 import { EditionsCollection } from "../api/editionsCollection.js";
 import { UdcCollection } from "../api/udcCollection.js";
-import { ReadersTable } from "./RedersTable.jsx";
+import { ReadersTable } from "./Readers/RedersTable.jsx";
 import { ReadersCollection } from "../api/readersCollection.js";
-import { EditBookForm } from "./EditBookForm.jsx";
-import { BookManagement } from "./BookManagent.jsx";
-import { LoginForm } from "./LoginForm.jsx";
+import { EditBookForm } from "./Books/EditBookForm.jsx";
+import { BookManagement } from "./Books/BookManagent.jsx";
+import { LoginForm } from "./Users/LoginForm.jsx";
 import { UsersCollection } from "../api/usersCollection.js";
-import { RegistrationForm } from "./RegistrationForm.jsx";
-import { UsersTable } from "./UsersTable.jsx";
-import { DeleteUserForm } from "./DeleteUserFrom.jsx";
-import "../Styles/NavBar.css"
+import { RegistrationForm } from "./Users/RegistrationForm.jsx";
+import { UsersTable } from "./Users/UsersTable.jsx";
+import { DeleteUserForm } from "./Users/DeleteUserFrom.jsx";
+import "../Styles/NavBar.css";
 
 export const App = () => {
   const [showTable, setShowTable] = useState(false);
@@ -35,7 +35,7 @@ export const App = () => {
   const [isRegistrationMode, setIsRegistrationMode] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [showDeleteUserForm, setShowDeleteUserForm] = useState(false);
-
+  
   const { books, countries, editions, udc, readers, users, isLoading } =
     useTracker(() => {
       const editionsHandle = Meteor.subscribe("editions");
@@ -46,6 +46,7 @@ export const App = () => {
       const readersHandle = Meteor.subscribe("readers");
       const abonementhandle = Meteor.subscribe("abonements");
       const usersHandle = Meteor.subscribe("users");
+      const a = Meteor.subscribe("readerAbonements")     
 
       if (!countriesHandle.ready()) {
         return { countries: [] };
@@ -218,17 +219,27 @@ export const App = () => {
       <NavbarButton onClick={handleShowAddForm}>Добавить книгу</NavbarButton>
       <NavbarButton onClick={handleShowDeleteForm}>Удалить книгу</NavbarButton>
       <NavbarButton onClick={handleShowSearchForm}>Найти книги</NavbarButton>
-      <NavbarButton onClick={handleShowEditForm}>Редактировать книги</NavbarButton>
-      <NavbarButton onClick={handleShowReaders}>Показать читателей</NavbarButton>
-      <NavbarButton onClick={handleShowBookManagementForm}>Добавить/Удалить книгу читателю</NavbarButton>
+      <NavbarButton onClick={handleShowEditForm}>
+        Редактировать книги
+      </NavbarButton>
+      <NavbarButton onClick={handleShowReaders}>
+        Показать читателей
+      </NavbarButton>
+      <NavbarButton onClick={handleShowBookManagementForm}>
+        Добавить/Удалить книгу читателю
+      </NavbarButton>
       <NavbarButton onClick={() => setIsLoggedIn(false)}>Выйти</NavbarButton>
     </div>
   );
-  
+
   const AdminPanel = () => (
     <div className="navbar-container">
-      <NavbarButton onClick={() => handleShowDeleteUserForm(true)}>Удалить пользователя</NavbarButton>
-      <NavbarButton onClick={() => handleShowUsersTable(false)}>Показать пользователей</NavbarButton>
+      <NavbarButton onClick={() => handleShowDeleteUserForm(true)}>
+        Удалить пользователя
+      </NavbarButton>
+      <NavbarButton onClick={() => handleShowUsersTable(false)}>
+        Показать пользователей
+      </NavbarButton>
       <NavbarButton onClick={() => setIsLoggedIn(false)}>Выйти</NavbarButton>
     </div>
   );

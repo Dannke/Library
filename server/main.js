@@ -72,6 +72,10 @@ Meteor.startup(async () => {
     const users = UsersCollection.find();
     return users;
   });
+  Meteor.publish("readerAbonements", function (readerId) {
+    const abonements = AbonementCollection.find();
+    return abonements;
+  });
 
   Meteor.methods({
     addBook(bookData, count) {
@@ -244,6 +248,35 @@ Meteor.startup(async () => {
           "Невозможно удалить администратора"
         );
       }
+    },
+    availableBooks() {
+      // Получаем _id всех книг, которые уже выданы
+      const issuedBookIds = AbonementCollection.find({
+        delivery_date: null,
+      }).map((abonement) => abonement.book_number_id);
+      // Получаем все книги, _id которых не находится в issuedBookIds
+      const availableBooks = inventoryNumbersCollection
+        .find({
+          _id: { $nin: issuedBookIds },
+        })
+        .fetch();
+
+      return availableBooks;
+    },
+    getIssuedBooks: function (readerId) {
+      check(readerId, String);
+
+      const issuedBookIds = AbonementCollection.find({
+        id_reader: readerId,
+        delivery_date: null,
+      }).map((abonement) => abonement.book_number_id);
+
+      const IssuedBooks = inventoryNumbersCollection
+        .find({
+          _id: { $in: issuedBookIds },
+        })
+        .fetch();
+      return IssuedBooks;
     },
   });
 });

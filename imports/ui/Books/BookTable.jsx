@@ -1,6 +1,6 @@
 // ui/BookTable.jsx
 import React from "react";
-import "../Styles/BookTable.css";
+import "../../Styles/BookTable.css";
 
 export const BookTable = ({ books }) => {
   return (

@@ -1,6 +1,7 @@
 // ui/RegistrationForm.jsx
 import React, { useState } from "react";
-import "../Styles/RegistrationForm.css";
+import "../../Styles/RegistrationForm.css";
+import { ToastContainer, toast } from "react-toastify";
 
 export const RegistrationForm = ({ onRegister, onCancelRegistration  }) => {
   const [username, setUsername] = useState("");
@@ -16,7 +17,9 @@ export const RegistrationForm = ({ onRegister, onCancelRegistration  }) => {
   };
 
   return (
-    <div className="registration-form form">
+    <div>
+      <ToastContainer />
+      <div className="registration-form form">
       <div className="form-field">
         <label>Логин:</label>
         <input
@@ -45,6 +48,8 @@ export const RegistrationForm = ({ onRegister, onCancelRegistration  }) => {
       <div className="button-spacing"></div>
       <button onClick={handleCancelRegistration}>Назад к входу</button>
     </div>
+    </div>
+    
   );
 };
 
